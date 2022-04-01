@@ -1,0 +1,18 @@
+#---> Boot
+kernel=zImagen
+disable_overscan=1
+boot_delay=0
+enable_uart=1
+disable_splash=1
+
+hdmi_cvt=1280 480 60
+hdmi_group=2
+hdmi_mode=87
+
+#--> OverClock
+#sdram_freq=700
+#initial_turbo=1
+#force_turbo=1
+#over_voltage=6
+#arm_freq=1400
+#core_freq=600

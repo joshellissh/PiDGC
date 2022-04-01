@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/battery.png</file>
+        <file>images/big_needle.png</file>
+        <file>images/blue_hilite_leading.png</file>
+        <file>images/center_lines.png</file>
+        <file>images/center_logo.png</file>
+        <file>images/coolant.png</file>
+        <file>images/fuel.png</file>
+        <file>images/green_hilite_leading.png</file>
+        <file>images/high_beam.png</file>
+        <file>images/lagging_max_boost.png</file>
+        <file>images/left_gauge_bg.png</file>
+        <file>images/left_gauge_fg.png</file>
+        <file>images/left_indicator.png</file>
+        <file>images/little_needle.png</file>
+        <file>images/low_beam.png</file>
+        <file>images/microcontroller.png</file>
+        <file>images/mil.png</file>
+        <file>images/oil.png</file>
+        <file>images/parking-lights.png</file>
+        <file>images/red_hilite_leading.png</file>
+        <file>images/reset.png</file>
+        <file>images/right_gauge_bg.png</file>
+        <file>images/right_gauge_bg_2.png</file>
+        <file>images/right_gauge_fg.png</file>
+        <file>images/right_indicator.png</file>
+        <file>sounds/blinker.wav</file>
+        <file>sounds/chime.wav</file>
+        <file>fonts/bladi-two-4f-italic.ttf</file>
+        <file>fonts/arial.ttf</file>
+    </qresource>
+</RCC>
