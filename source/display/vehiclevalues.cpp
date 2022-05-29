@@ -23,8 +23,12 @@ void VehicleValues::reset() {
     lowBeam = false;
     highBeam = false;
     mil = false;
-    serialConnected = false;
-    ppm = 8000;
+    ppm = 10500;
+    odometerRead = false;
+    configRead = false;
+    lastConfigAttempt = 0;
+    lastOdometerAttempt = 0;
+    lastSerialRead = 0;
 }
 
 void VehicleValues::deserialize(const QJsonObject &json) {
@@ -83,9 +87,6 @@ void VehicleValues::deserialize(const QJsonObject &json) {
 
     if (json.contains("mil") && json["mil"].isBool())
        mil = json["mil"].toBool();
-
-    if (json.contains("serialConnected") && json["serialConnected"].isBool())
-       serialConnected = json["serialConnected"].toBool();
 }
 
 QString VehicleValues::serialize() {
@@ -108,7 +109,6 @@ QString VehicleValues::serialize() {
     jobject["lowBeam"] = lowBeam;
     jobject["highBeam"] = highBeam;
     jobject["mil"] = mil;
-    jobject["serialConnected"] = serialConnected;
     jobject["vssPulsesPerMile"] = ppm;
 
     QJsonDocument doc( jobject );

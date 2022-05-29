@@ -1,16 +1,19 @@
 #define NO_PULSE    99999
-#define LOW_FREQ    15000000  // 15000000
-#define MED_FREQ    250000    // 250000
-#define HI_FREQ     100000    // 100000
+#define LOW_FREQ    5000000   // 500ms
+#define MED_FREQ    250000    // 250ms
+#define HI_FREQ     100000    // 100ms
 
 #include "canbus.h"
 #include "pins.h"
 #include "sdcard.h"
 #include "values.h"
+#include "serialreader.h"
+#include "serialComms.h"
+#include "analogReaders.h"
 
-Canbus canbus;
 SDCard sdCard;
 Values values;
+Canbus canbus;
 
 void setup() {
   // Turn on LED as a power indicator
@@ -27,8 +30,9 @@ void setup() {
   canbus.init();
 
   // Initialize smoothed variables
-  values.fuelLevel.begin();
-  values.mph.begin();
+  values.fuelLevel.begin(SMOOTHED_AVERAGE, 100);
+  values.mph.begin(SMOOTHED_AVERAGE, 40);
+  values.voltage.begin(SMOOTHED_AVERAGE, 10);
 
   // Set value to expiration so it will fire immediately on boot
   values.lowFrequency = LOW_FREQ;
@@ -43,24 +47,100 @@ void setup() {
   pinMode(REVERSE, INPUT);
   pinMode(MIL, INPUT);
   pinMode(GAUGE_LIGHTS, INPUT);
+
+  // Load initial values from files
+  values.tripOdometer = sdCard.readFloat(TRIP_FILE, 0.0f);
+  values.odometer = sdCard.readFloat(ODOMETER_FILE, 0.0f);
+  values.ppm = sdCard.readInt(PPM_FILE, 10500);
+  values.blinkerSound = sdCard.readBool(BLINKER_FILE, true);
+  values.chimeSound = sdCard.readBool(CHIME_FILE, true);
+  values.screenDimming = sdCard.readInt(DIMMING_FILE, 20);  
 }
 
 void loop() {
-  // Request engine RPM
-  Serial.println("Requesting RPM...");
-  canbus.send(0x0c);
-  
-  delay(1000);
+  handleComms(sdCard, values);
+  readAnalogPins();
 
-  values.fuelLevel.reading(analogRead(FUEL_LEVEL));
-  values.gaugeLights = digitalRead(GAUGE_LIGHTS);
-  values.highBeams = digitalRead(HIGH_BEAMS);
-  values.leftBlinker = digitalRead(LEFT_BLINKER);
-  values.lowBeams = digitalRead(LOW_BEAMS);
-  values.mil = digitalRead(MIL);
-  values.reverse = digitalRead(REVERSE);
-  values.rightBlinker = digitalRead(RIGHT_BLINKER);
-  values.voltage = analogRead(VOLTAGE);
+  // High frequency updates
+  if (values.highFrequency >= HI_FREQ) {
+    values.highFrequency -= HI_FREQ;
+
+    // Request engine RPM
+    canbus.send(0x0c);
+
+    // Request MAP
+    canbus.send(0x0B);
+
+    cli();
+    unsigned int numPulses = values.vssPulseCounter;
+    unsigned int pulseSepMicros = values.vssPulseSeparation;
+    sei();
+    values.vssPulseCounter = 0;
+    values.vssPulseSeparation = NO_PULSE;
+
+    // Pulses counted / pulses per mile = distance travelled.
+    float distance = (float)numPulses / (float)values.ppm;
+
+    // Update odometers
+    values.odometer += distance;
+    values.tripOdometer += distance;
+
+    // Write updated odometers to file
+    writeOdometers(values.tripOdometer, values.odometer);
+
+    // Update MPH
+    if (pulseSepMicros != NO_PULSE && pulseSepMicros > 0) {
+        // Calculate MPH
+        float oneMphInMicros = 3600000000.0f / (float)values.ppm;
+        float mph = oneMphInMicros / (float)pulseSepMicros;
+        values.mph.add(mph);
+    } else {
+        values.mph.add(0.0);
+    }
+
+    // Send rpm & boost
+    char output[256] = {0};
+    sprintf(output, "rpm:%d\nboost:%f", values.rpm, values.boostPressure);
+    Serial.println(output);
+  }
+
+  // Medium frequency updates
+  if (values.mediumFrequency >= MED_FREQ) {
+    values.mediumFrequency -= MED_FREQ;
+
+    char output[512] = {0};
+    sprintf(
+      output, 
+      "voltage:%f\nfuel:%f\nhi:%d\nleft:%d\nlo:%d\nrev:%d\nright:%d\nmil:%d\nglite:%d\nmph:%d",
+      values.voltage.get(),
+      values.fuelLevel.get(),
+      readHighBeams(),
+      readLeftBlinker(),
+      readLowBeams(),
+      readReverse(),
+      readRightBlinker(),
+      readMIL(),
+      readGaugeLights(),
+      values.mph.get()
+    );
+    Serial.println(output);
+  }
+
+  // Low frequency updates
+  if (values.lowFrequency >= LOW_FREQ) {
+    values.lowFrequency -= LOW_FREQ;
+
+    // Request coolant temp
+    canbus.send(0x05);
+
+    // Request Barometric Pressure
+    canbus.send(0x33);
+  }
+}
+
+void readAnalogPins() {
+  values.fuelLevel.add(readFuelLevel());
+  values.voltage.add(readVoltage());
 }
 
 void vssInterrupt() {
@@ -75,4 +155,24 @@ void vssInterrupt() {
   }
 
   values.vssPulseCounter++;
+}
+
+void writeOdometers(float trip, float odometer) {
+  char currentTrip[10] = {0};
+  char currentOdometer[10] = {0};
+  char writeTrip[10] = {0};
+  char writeOdometer[10] = {0};
+  
+  dtostrf(sdCard.readFloat(TRIP_FILE, 0.0f), 0, 1, currentTrip);
+  dtostrf(sdCard.readFloat(ODOMETER_FILE, 0.0f), 0, 1, currentOdometer);
+  dtostrf(trip, 0, 1, writeTrip);
+  dtostrf(odometer, 0, 1, writeOdometer);
+
+  // Only write out value if it has changed by more than a 10th of a mile
+  if (trip != 0.0f && strcmp(currentTrip, writeTrip) != 0)
+    sdCard.writeValue(TRIP_FILE, trip);
+
+  // Only write out value if it has changed by more than a 10th of a mile
+  if (odometer != 0.0f && strcmp(currentOdometer, writeOdometer) != 0)
+    sdCard.writeValue(ODOMETER_FILE, odometer);
 }

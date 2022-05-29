@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QProcess>
 #include "hwdialog.h"
-#include "commsserver.h"
+#include "serialcontroller.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,9 +19,6 @@ int main(int argc, char *argv[])
 
     VehicleValues vehicle;
 
-    // Create server
-    CommsServer server(vehicle);
-
     // Create window
     Window window(vehicle);
     window.setCursor(Qt::BlankCursor);
@@ -33,8 +30,9 @@ int main(int argc, char *argv[])
     // Store dialog reference in various windows
     window.setHWDialog(hwDialog);
 
-    // Start server
-    server.startServer();
+    // Start serial interface
+    SerialController serialController(vehicle);
+    serialController.start();
 
     return app.exec();
 }

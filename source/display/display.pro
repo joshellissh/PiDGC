@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network multimedia
+QT       += core gui network multimedia serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,16 +26,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     glwidget.cpp \
+    serialworker.cpp \
     window.cpp \
     painter.cpp \
     vehiclevalues.cpp \
     indicators.cpp \
-    commsserver.cpp \
-    commsthread.cpp \
     hwdialog.cpp
 
 HEADERS += \
     glwidget.h \
+    serialcontroller.h \
+    serialworker.h \
     window.h \
     painter.h \
     images.h \
@@ -44,8 +45,6 @@ HEADERS += \
     converters.h \
     vehiclevalues.h \
     indicators.h \
-    commsserver.h \
-    commsthread.h \
     hwdialog.h
 
 FORMS += \

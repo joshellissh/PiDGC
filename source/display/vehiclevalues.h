@@ -5,11 +5,12 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QJsonDocument>
+#include <QQueue>
 
 /**
  * @brief This is NOT the right way to implement a thread safe data class in C++.
  * It works, but it is not performant due to using a single mutex and all these garbage
- * getters/setters. I just couldn't be bothered to do it the (more tedius (yay C++! :facepalm:)
+ * getters/setters. I just couldn't be bothered to do it the more tedius (yay C++! :facepalm:)
  * right way given the performance this gauge cluster needs to hit and how relatively "slow"
  * this needs to be updated.
  */
@@ -18,10 +19,20 @@ class VehicleValues
 public:
     VehicleValues();
 
+    bool exiting = false;
+
     bool initialized = false;
     bool resetTrip = false;
     bool writePPM = false;
-    int newPPM = 8000;
+    int newPPM = 10500;
+
+    QMutex queueMutex;
+    QQueue<QString> serialWriteQueue;
+    bool odometerRead = false;
+    int lastOdometerAttempt = 0;
+    bool configRead = false;
+    int lastConfigAttempt = 0;
+    int lastSerialRead = 0;
 
     void deserialize(const QJsonObject &json);
     QString serialize();
@@ -59,13 +70,12 @@ public:
     bool getRightBlinker() { QMutexLocker locker(&mutex); return this->rightBlinker; }
     void setRpm(float rpm) { QMutexLocker locker(&mutex); this->rpm = rpm; }
     float getRpm() { QMutexLocker locker(&mutex); return this->rpm; }
-    void setSerialConnected(bool serialConnected) { QMutexLocker locker(&mutex); this->serialConnected = serialConnected; }
-    bool getSerialConnected() { QMutexLocker locker(&mutex); return this->serialConnected; }
+    void setScreenDimming(int screenDimming) { QMutexLocker locker(&mutex); this->screenDimming = screenDimming; }
+    float getScreenDimming() { QMutexLocker locker(&mutex); return this->screenDimming; }
     void setTripOdometer(float tripOdometer) { QMutexLocker locker(&mutex); this->tripOdometer = tripOdometer; }
     float getTripOdometer() { QMutexLocker locker(&mutex); return this->tripOdometer; }
     void setVoltage(float voltage) { QMutexLocker locker(&mutex); this->voltage = voltage; }
     float getVoltage() { QMutexLocker locker(&mutex); return this->voltage; }
-
 
 private:
     mutable QMutex mutex;
@@ -86,6 +96,7 @@ private:
     bool reverse;
     bool rightBlinker;
     float rpm;
+    int screenDimming;
     bool serialConnected;
     float tripOdometer;
     float voltage;

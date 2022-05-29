@@ -1,26 +1,31 @@
 #ifndef VEHICLEVALUES_H
 #define VEHICLEVALUES_H
 
-#include "movingAvg.h"
+#include <Smoothed.h>
 
 class Values {
 public:
+  float barometricPressure;
+  bool blinkerSound;
   float boostPressure;
-  float coolantTemp;
-  movingAvg fuelLevel;
+  bool chimeSound;
+  int coolantTemp;
+  Smoothed<float> fuelLevel;
   bool gaugeLights;
   bool highBeams;
   bool leftBlinker;
   bool lowBeams;
   bool mil;
-  movingAvg mph;
+  Smoothed<int> mph;
   float oilPressure;
   float odometer;
+  int ppm;
   bool reverse;
   bool rightBlinker;
   int rpm;
+  int screenDimming;
   float tripOdometer;
-  float voltage;
+  Smoothed<float> voltage;
 
   // Vehicle speed sensor
   volatile unsigned long vssLastPulse;
@@ -32,7 +37,7 @@ public:
   elapsedMicros mediumFrequency;
   elapsedMicros highFrequency;
   
-  Values() : fuelLevel(20), mph(20) {
+  Values() {
     vssLastPulse = 0;
     vssPulseSeparation = 0;
     vssPulseCounter = 0;

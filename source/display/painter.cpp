@@ -210,11 +210,11 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
     frameCount++;
 
     // FPS
-    double fps = 1000.0 / (double)frameTimer.elapsed();
-    QString fpsText;
-    fpsText.sprintf("%.1f", fps);
-    painter->drawText(0.0f, 0.0f, 55.0f, 20.0f, Qt::AlignTrailing, fpsText);
-    frameTimer.restart();
+//    double fps = 1000.0 / (double)frameTimer.elapsed();
+//    QString fpsText;
+//    fpsText.sprintf("%.1f", fps);
+//    painter->drawText(0.0f, 0.0f, 55.0f, 20.0f, Qt::AlignTrailing, fpsText);
+//    frameTimer.restart();
 }
 
 // Startup animation
@@ -318,7 +318,7 @@ void Painter::updateIndicators() {
     indicators.fuel = vehicle->getFuel() <= 0.25f;
     indicators.coolant = vehicle->getCoolant() > 257.0f;
     indicators.shiftLight = vehicle->getRpm() > 6500.0f;
-    indicators.serialConnected = vehicle->getSerialConnected();
+    indicators.serialConnected = QTime::currentTime().msecsSinceStartOfDay() - vehicle->lastSerialRead < 5000 ? true : false;
 }
 
 void Painter::playChime() {

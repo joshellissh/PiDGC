@@ -20,6 +20,7 @@ Window::Window(VehicleValues &vehicle)
 
 void Window::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Escape) {
+        vehicle->exiting = true;
         this->close();
     }
 }
@@ -29,7 +30,9 @@ void Window::mousePressEvent(QMouseEvent *event) {
     // See if reset button was pressed
     if (sqrt(pow(415.0 - event->x(), 2) + pow(420.0 - event->y(), 2) * 1.0) < 30.0f) {
         qDebug() << "Trip reset pressed.";
-        vehicle->resetTrip = true;
+        QMutexLocker locker(&vehicle->queueMutex);
+        vehicle->serialWriteQueue.enqueue("trip");
+        vehicle->setTripOdometer(0.0f);
     }
 
     // See if microcontroller button was pressed

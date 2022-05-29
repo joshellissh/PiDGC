@@ -1,7 +1,14 @@
 #ifndef SDCARD_H
 #define SDCARD_H
 
-#define ERROR_FLOAT -9999.0f
+#include <SD.h>
+
+#define TRIP_FILE     "trip.txt"
+#define ODOMETER_FILE "odometer.txt"
+#define PPM_FILE      "ppm.txt"
+#define BLINKER_FILE  "blinkerSound.txt"
+#define CHIME_FILE    "chimeSound.txt"
+#define DIMMING_FILE  "screenDimming.txt"
 
 class SDCard {
 private:
@@ -9,8 +16,20 @@ private:
 
 public:
   bool initCard();
-  float readFloat(const char *fileName);
-  void writeFloat(const char *fileName, float value);
+  
+  bool readBool(const char *fileName, bool defaultValue);
+  float readFloat(const char *fileName, float defaultValue);
+  int readInt(const char *fileName, int defaultValue);
+
+  template <typename T> void writeValue(const char *fileName, T value) {
+    File dataFile = SD.open(fileName, FILE_WRITE);
+  
+    if (dataFile) {
+      dataFile.truncate();
+      dataFile.print(value);
+      dataFile.close();
+    }
+  }
 };
 
 #endif
