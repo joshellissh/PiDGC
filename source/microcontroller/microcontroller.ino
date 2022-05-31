@@ -60,6 +60,7 @@ void setup() {
 void loop() {
   handleComms(sdCard, values);
   readAnalogPins();
+  canbus.events();
 
   // High frequency updates
   if (values.highFrequency >= HI_FREQ) {

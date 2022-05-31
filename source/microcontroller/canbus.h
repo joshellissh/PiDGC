@@ -12,6 +12,8 @@ public:
 
   // Sends a CAN request
   void send(uint8_t activeByte);
+
+  void events();
 };
 
 #endif

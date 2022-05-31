@@ -75,6 +75,10 @@ void Canbus::init() {
   canBus.onReceive(receive);
 }
 
+void Canbus::events() {
+  canBus.events();
+}
+
 void Canbus::send(uint8_t activeByte){
   CAN_message_t msgTx;
   msgTx.len = 3; // number of bytes in request
