@@ -73,6 +73,8 @@ void Canbus::init() {
   canBus.enableMBInterrupt(MB1);
   // Add callback for canBus
   canBus.onReceive(receive);
+  // Get bus static
+  canBus.mailboxStatus();
 }
 
 void Canbus::events() {
