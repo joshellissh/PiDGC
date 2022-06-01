@@ -33,8 +33,8 @@ inline float mphToAngle(float mph) {
 
 inline float temperatureToAngle(float temp) {
     // Limit to usable range
-    temp = min(max(temp, 170.0f), 270.0f);
-    float trueAngle = ((270.0f - temp) / 100.0f) * 50.0f;
+    temp = min(max(temp, 150.0f), 250.0f);
+    float trueAngle = ((250.0f - temp) / 100.0f) * 50.0f;
     return trueAngle - 115.0f;
 }
 

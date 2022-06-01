@@ -8,7 +8,7 @@ VehicleValues::VehicleValues()
 void VehicleValues::reset() {
     rpm = 0.0f;
     mph = 0.0f;
-    coolant = 170.0f;
+    coolant = 150.0f;
     fuel = 0.0f;
     gaugeLights = false;
     boost = 0.0f;

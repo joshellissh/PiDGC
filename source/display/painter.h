@@ -42,6 +42,7 @@ private:
     ImageMap *images;
     QFont largeGauge;
     QFont smallGauge;
+    QFont tinyGauge;
     QFont normalText;
     QFont largeText;
     QPen gaugeTextPen;

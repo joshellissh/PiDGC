@@ -18,6 +18,8 @@ Painter::Painter(VehicleValues &vehicle)
     largeGauge.setPointSize(30);
     smallGauge.setFamily("BladiTwo4F-Italic");
     smallGauge.setPointSize(15);
+    tinyGauge.setFamily("BladiTwo4F-Italic");
+    tinyGauge.setPointSize(12);
     normalText.setFamily("Arial");
     normalText.setPointSize(12);
     largeText.setFamily("Arial");
@@ -186,6 +188,11 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
     voltage.sprintf("%.1f", vehicle->getVoltage());
     painter->setFont(smallGauge);
     painter->drawText(1031.0f - 20.0f, 388.5f - 10.0f, 40.0f, 20.0f, Qt::AlignCenter | Qt::AlignHCenter, voltage);
+    // Battery voltage
+    QString temperature;
+    temperature.sprintf("%d", (int)vehicle->getCoolant());
+    painter->setFont(tinyGauge);
+    painter->drawText(249.0f - 20.0f, 390.5f - 10.0f, 40.0f, 20.0f, Qt::AlignCenter | Qt::AlignHCenter, temperature);
 
     painter->setFont(normalText);
     painter->setOpacity(0.8);
@@ -307,7 +314,7 @@ void Painter::updateIndicators() {
             (indicators.mil != vehicle->getMil() ||
             indicators.oil != vehicle->getOilPressure() ||
             indicators.battery != (vehicle->getVoltage() < 11.5f || vehicle->getVoltage() > 15.0f) ||
-            indicators.coolant != (vehicle->getCoolant() > 257.0f)))
+            indicators.coolant != (vehicle->getCoolant() > 220.0f)))
         playChime();
 
     indicators.lowBeam = vehicle->getLowBeam() || vehicle->getHighBeam();
@@ -316,7 +323,7 @@ void Painter::updateIndicators() {
     indicators.oil = vehicle->getOilPressure() < 10.0f;
     indicators.battery = vehicle->getVoltage() < 11.5f || vehicle->getVoltage() > 15.0f;
     indicators.fuel = vehicle->getFuel() <= 0.25f;
-    indicators.coolant = vehicle->getCoolant() > 257.0f;
+    indicators.coolant = vehicle->getCoolant() > 220.0f;
     indicators.shiftLight = vehicle->getRpm() > 6500.0f;
     indicators.serialConnected = QTime::currentTime().msecsSinceStartOfDay() - vehicle->lastSerialRead < 5000 ? true : false;
 }
