@@ -3,3 +3,4 @@
 /buildroot/output/
 *.o
 moc_*
+/.idea/
