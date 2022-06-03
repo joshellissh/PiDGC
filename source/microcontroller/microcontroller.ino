@@ -3,17 +3,17 @@
 #define MED_FREQ    250000    // 250ms
 #define HI_FREQ     100000    // 100ms
 
-#include "canbus.h"
 #include "pins.h"
 #include "sdcard.h"
 #include "values.h"
 #include "serialreader.h"
 #include "serialComms.h"
 #include "analogReaders.h"
+#include "canbus.h"
 
 SDCard sdCard;
 Values values;
-Canbus canbus;
+FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
 
 void setup() {
   // Turn on LED as a power indicator
@@ -27,7 +27,7 @@ void setup() {
   sdCard.initCard();
 
   // Configure CAN bus
-  canbus.init();
+  canInit();
 
   // Initialize smoothed variables
   values.fuelLevel.begin(SMOOTHED_AVERAGE, 100);
@@ -60,17 +60,19 @@ void setup() {
 void loop() {
   handleComms(sdCard, values);
   readAnalogPins();
-  canbus.events();
+
+  // Process necessary canbus events
+  can1.events();
 
   // High frequency updates
   if (values.highFrequency >= HI_FREQ) {
     values.highFrequency -= HI_FREQ;
 
     // Request engine RPM
-    canbus.send(0x0c);
+    canSend(0x0c);
 
     // Request MAP
-    canbus.send(0x0B);
+    canSend(0x0B);
 
     cli();
     unsigned int numPulses = values.vssPulseCounter;
@@ -132,10 +134,14 @@ void loop() {
     values.lowFrequency -= LOW_FREQ;
 
     // Request coolant temp
-    canbus.send(0x05);
+    canSend(0x05);
 
     // Request Barometric Pressure
-    canbus.send(0x33);
+    canSend(0x33);
+
+    char output[256] = {0};
+    sprintf(output, "coolant:%d", values.coolantTemp);
+    Serial.println(output);
   }
 }
 
