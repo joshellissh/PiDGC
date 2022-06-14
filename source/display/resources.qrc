@@ -25,9 +25,8 @@
         <file>images/right_gauge_bg_2.png</file>
         <file>images/right_gauge_fg.png</file>
         <file>images/right_indicator.png</file>
-        <file>sounds/blinker.wav</file>
-        <file>sounds/chime.wav</file>
         <file>fonts/bladi-two-4f-italic.ttf</file>
         <file>fonts/arial.ttf</file>
+        <file>images/boost_lagging_max_box.png</file>
     </qresource>
 </RCC>

@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Buildroot 2019.02.5-ge6e79018-dirty Configuration
+# Buildroot 2019.02.5-g0e477c9d-dirty Configuration
 #
 BR2_HAVE_DOT_CONFIG=y
 BR2_HOST_GCC_AT_LEAST_4_5=y
@@ -158,7 +158,7 @@ BR2_BZCAT="bzcat"
 BR2_XZCAT="xzcat"
 BR2_LZCAT="lzip -d -c"
 BR2_TAR_OPTIONS=""
-BR2_DEFCONFIG="/home/jellish/code/pidgc/buildroot/configs/ftdev_rpi3_fastboot_defconfig"
+BR2_DEFCONFIG="/home/jellish/code/pidgc/buildroot/configs/pidgc_rpi3_defconfig"
 BR2_DL_DIR="$(HOME)/.dl"
 BR2_HOST_DIR="$(BASE_DIR)/host"
 
@@ -2422,7 +2422,7 @@ BR2_TARGET_ROOTFS_EXT2_4=y
 BR2_TARGET_ROOTFS_EXT2_GEN=4
 BR2_TARGET_ROOTFS_EXT2_REV=1
 BR2_TARGET_ROOTFS_EXT2_LABEL=""
-BR2_TARGET_ROOTFS_EXT2_SIZE="64M"
+BR2_TARGET_ROOTFS_EXT2_SIZE="74M"
 BR2_TARGET_ROOTFS_EXT2_INODES=0
 BR2_TARGET_ROOTFS_EXT2_RESBLKS=5
 BR2_TARGET_ROOTFS_EXT2_MKFS_OPTIONS="-O ^64bit"

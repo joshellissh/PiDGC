@@ -7,20 +7,13 @@ class Indicators
 public:
     Indicators();
 
-    bool left;
-    bool right;
-    bool lowBeam;
-    bool highBeam;
-    bool mil;
-    bool oil;
     bool battery;
-    bool fuel;
     bool coolant;
+    bool fuel;
+    bool oil;
+
     bool boostLaggingMax;
     float boostLaggingMaxOpacity;
-    bool shiftLight;
-    bool serialConnected;
-    bool gaugeLights;
 };
 
 #endif // INDICATORS_H

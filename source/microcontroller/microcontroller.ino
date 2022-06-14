@@ -10,10 +10,15 @@
 #include "serialComms.h"
 #include "analogReaders.h"
 #include "canbus.h"
+#include "buzzerSound.h"
+#include "indicators.h"
 
 SDCard sdCard;
 Values values;
+Indicators indicators;
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
+BuzzerSound blinkerSound(BUZZER, 50);
+BuzzerSound milSound(BUZZER, 3000);
 
 void setup() {
   // Turn on LED as a power indicator
@@ -30,7 +35,7 @@ void setup() {
   canInit();
 
   // Initialize smoothed variables
-  values.fuelLevel.begin(SMOOTHED_AVERAGE, 100);
+  values.fuelLevel.begin(SMOOTHED_AVERAGE, 200);
   values.mph.begin(SMOOTHED_AVERAGE, 40);
   values.voltage.begin(SMOOTHED_AVERAGE, 10);
 
@@ -44,7 +49,6 @@ void setup() {
   pinMode(LOW_BEAMS, INPUT);
   pinMode(RIGHT_BLINKER, INPUT);
   pinMode(LEFT_BLINKER, INPUT);
-  pinMode(REVERSE, INPUT);
   pinMode(MIL, INPUT);
   pinMode(GAUGE_LIGHTS, INPUT);
 
@@ -53,16 +57,20 @@ void setup() {
   values.odometer = sdCard.readFloat(ODOMETER_FILE, 0.0f);
   values.ppm = sdCard.readInt(PPM_FILE, 10500);
   values.blinkerSound = sdCard.readBool(BLINKER_FILE, true);
-  values.chimeSound = sdCard.readBool(CHIME_FILE, true);
-  values.screenDimming = sdCard.readInt(DIMMING_FILE, 20);  
+  values.screenDimming = sdCard.readInt(DIMMING_FILE, 20); 
 }
 
 void loop() {
   handleComms(sdCard, values);
   readAnalogPins();
+  indicators.update(milSound);
 
   // Process necessary canbus events
   can1.events();
+
+  // process buzzer sounds
+  blinkerSound.loop();
+  milSound.loop();
 
   // High frequency updates
   if (values.highFrequency >= HI_FREQ) {
@@ -111,20 +119,38 @@ void loop() {
   if (values.mediumFrequency >= MED_FREQ) {
     values.mediumFrequency -= MED_FREQ;
 
+    bool prevLeftBlinker = values.leftBlinker;
+    bool prevRightBlinker = values.rightBlinker;
+    bool prevMil = values.mil;
+
+    values.leftBlinker = readLeftBlinker();
+    values.rightBlinker = readRightBlinker();
+    values.mil = readMIL();
+
+    if (values.blinkerSound) {
+      if ((!prevLeftBlinker && values.leftBlinker) || (!prevRightBlinker && values.rightBlinker)) {
+        blinkerSound.play();
+      }
+    }
+
+    if (!prevMil && values.mil) {
+      milSound.play();
+    }
+
     char output[512] = {0};
     sprintf(
       output, 
-      "voltage:%f\nfuel:%f\nhi:%d\nleft:%d\nlo:%d\nrev:%d\nright:%d\nmil:%d\nglite:%d\nmph:%d",
+      "voltage:%f\nfuel:%f\nhi:%d\nleft:%d\nlo:%d\nright:%d\nmil:%d\nglite:%d\nmph:%d\noil:%f",
       values.voltage.get(),
       values.fuelLevel.get(),
       readHighBeams(),
-      readLeftBlinker(),
+      values.leftBlinker,
       readLowBeams(),
-      readReverse(),
-      readRightBlinker(),
-      readMIL(),
+      values.rightBlinker,
+      values.mil,
       readGaugeLights(),
-      values.mph.get()
+      values.mph.get(),
+      values.oilPressure
     );
     Serial.println(output);
   }

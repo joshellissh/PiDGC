@@ -19,12 +19,12 @@
      <x>10</x>
      <y>10</y>
      <width>541</width>
-     <height>421</height>
+     <height>301</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>11</pointsize>
+     <pointsize>9</pointsize>
     </font>
    </property>
   </widget>
@@ -131,30 +131,77 @@
     </property>
    </widget>
   </widget>
-  <widget class="QCheckBox" name="chimeBox">
-   <property name="geometry">
-    <rect>
-     <x>560</x>
-     <y>110</y>
-     <width>191</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Enable Chime Sound</string>
-   </property>
-  </widget>
   <widget class="QCheckBox" name="blinkerBox">
    <property name="geometry">
     <rect>
      <x>560</x>
-     <y>140</y>
+     <y>170</y>
      <width>171</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
     <string>Enable Blinker Sound</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="screenDimmingSpinBox">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>110</y>
+     <width>71</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="suffix">
+    <string>%</string>
+   </property>
+   <property name="maximum">
+    <number>100</number>
+   </property>
+   <property name="singleStep">
+    <number>5</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>560</x>
+     <y>130</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Dim screen to </string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>130</y>
+     <width>181</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>when gauge lights are active.</string>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="configEdit">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>320</y>
+     <width>541</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
    </property>
   </widget>
  </widget>

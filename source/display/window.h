@@ -14,7 +14,7 @@ class Window : public QWidget
     Q_OBJECT
 
 public:
-    Window(VehicleValues &vehicle);
+    Window(VehicleValues &vehicle, Indicators &indicators);
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void setHWDialog(HWDialog &hwDialog);
@@ -22,6 +22,7 @@ public:
 private:
     Painter *painter;
     VehicleValues *vehicle;
+    Indicators *indicators;
     HWDialog *hwDialog;
 };
 

@@ -11,8 +11,8 @@ class SerialController : public QObject
     Q_OBJECT
     QThread workerThread;
 public:
-    SerialController(VehicleValues &vehicle) {
-        SerialWorker *worker = new SerialWorker(vehicle);
+    SerialController(VehicleValues &vehicle, Indicators &indicators) {
+        SerialWorker *worker = new SerialWorker(vehicle, indicators);
         worker->moveToThread(&workerThread);
         connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
         connect(this, &SerialController::start, worker, &SerialWorker::doWork);

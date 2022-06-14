@@ -5,19 +5,21 @@
 #include <QDebug>
 #include <QThread>
 #include "vehiclevalues.h"
+#include "indicators.h"
 
 class SerialWorker : public QObject
 {
     Q_OBJECT
 
 public:
-    SerialWorker(VehicleValues &vehicle);
+    SerialWorker(VehicleValues &vehicle, Indicators &indicators);
 
 public slots:
     void doWork();
 
 private:
     VehicleValues *vehicle;
+    Indicators *indicators;
     QByteArray receiveBuffer;
 
     QString getSerialPort();

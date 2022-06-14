@@ -7,7 +7,6 @@
 #define ODOMETER_FILE "odometer.txt"
 #define PPM_FILE      "ppm.txt"
 #define BLINKER_FILE  "blinkerSound.txt"
-#define CHIME_FILE    "chimeSound.txt"
 #define DIMMING_FILE  "screenDimming.txt"
 
 class SDCard {

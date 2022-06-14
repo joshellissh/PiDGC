@@ -8,7 +8,7 @@ VehicleValues::VehicleValues()
 void VehicleValues::reset() {
     rpm = 0.0f;
     mph = 0.0f;
-    coolant = 150.0f;
+    coolant = 0.0f;
     fuel = 0.0f;
     gaugeLights = false;
     boost = 0.0f;
@@ -16,19 +16,17 @@ void VehicleValues::reset() {
     odometer = 0.0f;
     tripOdometer = 0.0f;
     boostLaggingMax = 0.0f;
-    reverse = false;
     oilPressure = 0.0f;
     leftBlinker = false;
     rightBlinker = false;
     lowBeam = false;
     highBeam = false;
     mil = false;
-    ppm = 10500;
     odometerRead = false;
-    configRead = false;
-    lastConfigAttempt = 0;
     lastOdometerAttempt = 0;
     lastSerialRead = 0;
+    serialConnected = false;
+    initLoopFinished = false;
 }
 
 void VehicleValues::deserialize(const QJsonObject &json) {
@@ -64,14 +62,8 @@ void VehicleValues::deserialize(const QJsonObject &json) {
     if (json.contains("tripOdometer") && json["tripOdometer"].isDouble())
        tripOdometer = json["tripOdometer"].toDouble();
 
-    if (json.contains("reverse") && json["reverse"].isBool())
-       reverse = json["reverse"].toBool();
-
     if (json.contains("oilPressure") && json["oilPressure"].isDouble())
        oilPressure = json["oilPressure"].toDouble();
-
-    if (json.contains("vssPulsesPerMile"))
-       ppm = json["vssPulsesPerMile"].toInt();
 
     if (json.contains("left") && json["left"].isBool())
        leftBlinker = json["left"].toBool();
@@ -87,6 +79,9 @@ void VehicleValues::deserialize(const QJsonObject &json) {
 
     if (json.contains("mil") && json["mil"].isBool())
        mil = json["mil"].toBool();
+
+    if (json.contains("serialConnected") && json["serialConnected"].isBool())
+       serialConnected = json["serialConnected"].toBool();
 }
 
 QString VehicleValues::serialize() {
@@ -102,14 +97,13 @@ QString VehicleValues::serialize() {
     jobject["voltage"] = voltage;
     jobject["odometer"] = odometer;
     jobject["tripOdometer"] = tripOdometer;
-    jobject["reverse"] = reverse;
     jobject["oilPressure"] = oilPressure;
     jobject["leftBlinker"] = leftBlinker;
     jobject["rightBlinker"] = rightBlinker;
     jobject["lowBeam"] = lowBeam;
     jobject["highBeam"] = highBeam;
     jobject["mil"] = mil;
-    jobject["vssPulsesPerMile"] = ppm;
+    jobject["serialConnected"] = serialConnected;
 
     QJsonDocument doc( jobject );
     return doc.toJson();

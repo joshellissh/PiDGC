@@ -5,6 +5,7 @@
 #include <QProcess>
 #include "hwdialog.h"
 #include "serialcontroller.h"
+#include "indicators.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,9 +19,10 @@ int main(int argc, char *argv[])
     QSurfaceFormat::setDefaultFormat(fmt);
 
     VehicleValues vehicle;
+    Indicators indicators;
 
     // Create window
-    Window window(vehicle);
+    Window window(vehicle, indicators);
     window.setCursor(Qt::BlankCursor);
     window.show();
 
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
     window.setHWDialog(hwDialog);
 
     // Start serial interface
-    SerialController serialController(vehicle);
+    SerialController serialController(vehicle, indicators);
     serialController.start();
 
     return app.exec();

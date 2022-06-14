@@ -8,7 +8,6 @@ public:
   float barometricPressure;
   bool blinkerSound;
   float boostPressure;
-  bool chimeSound;
   int coolantTemp;
   Smoothed<float> fuelLevel;
   bool gaugeLights;
@@ -20,7 +19,6 @@ public:
   float oilPressure;
   float odometer;
   int ppm;
-  bool reverse;
   bool rightBlinker;
   int rpm;
   int screenDimming;

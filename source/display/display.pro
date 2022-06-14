@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    config.cpp \
         main.cpp \
     glwidget.cpp \
     serialworker.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
     hwdialog.cpp
 
 HEADERS += \
+    config.h \
     glwidget.h \
     serialcontroller.h \
     serialworker.h \

@@ -33,8 +33,11 @@ public:
     QLineEdit *ppmCurrent;
     QSpinBox *ppmSpinBox;
     QLabel *label_5;
-    QCheckBox *chimeBox;
     QCheckBox *blinkerBox;
+    QSpinBox *screenDimmingSpinBox;
+    QLabel *label;
+    QLabel *label_2;
+    QPlainTextEdit *configEdit;
 
     void setupUi(QDialog *HWDialog)
     {
@@ -43,9 +46,9 @@ public:
         HWDialog->resize(983, 446);
         plainTextEdit = new QPlainTextEdit(HWDialog);
         plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
-        plainTextEdit->setGeometry(QRect(10, 10, 541, 421));
+        plainTextEdit->setGeometry(QRect(10, 10, 541, 301));
         QFont font;
-        font.setPointSize(11);
+        font.setPointSize(9);
         plainTextEdit->setFont(font);
         closeButton = new QPushButton(HWDialog);
         closeButton->setObjectName(QString::fromUtf8("closeButton"));
@@ -74,12 +77,24 @@ public:
         label_5 = new QLabel(groupBox);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(210, 47, 41, 17));
-        chimeBox = new QCheckBox(HWDialog);
-        chimeBox->setObjectName(QString::fromUtf8("chimeBox"));
-        chimeBox->setGeometry(QRect(560, 110, 191, 23));
         blinkerBox = new QCheckBox(HWDialog);
         blinkerBox->setObjectName(QString::fromUtf8("blinkerBox"));
-        blinkerBox->setGeometry(QRect(560, 140, 171, 23));
+        blinkerBox->setGeometry(QRect(560, 170, 171, 23));
+        screenDimmingSpinBox = new QSpinBox(HWDialog);
+        screenDimmingSpinBox->setObjectName(QString::fromUtf8("screenDimmingSpinBox"));
+        screenDimmingSpinBox->setGeometry(QRect(650, 110, 71, 51));
+        screenDimmingSpinBox->setMaximum(100);
+        screenDimmingSpinBox->setSingleStep(5);
+        label = new QLabel(HWDialog);
+        label->setObjectName(QString::fromUtf8("label"));
+        label->setGeometry(QRect(560, 130, 91, 16));
+        label_2 = new QLabel(HWDialog);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setGeometry(QRect(730, 130, 181, 16));
+        configEdit = new QPlainTextEdit(HWDialog);
+        configEdit->setObjectName(QString::fromUtf8("configEdit"));
+        configEdit->setGeometry(QRect(10, 320, 541, 111));
+        configEdit->setFont(font);
 
         retranslateUi(HWDialog);
         QObject::connect(saveButton, SIGNAL(pressed()), HWDialog, SLOT(accept()));
@@ -96,8 +111,10 @@ public:
         groupBox->setTitle(QCoreApplication::translate("HWDialog", "Pulses Per Mile", nullptr));
         label_4->setText(QCoreApplication::translate("HWDialog", "Current:", nullptr));
         label_5->setText(QCoreApplication::translate("HWDialog", "New:", nullptr));
-        chimeBox->setText(QCoreApplication::translate("HWDialog", "Enable Chime Sound", nullptr));
         blinkerBox->setText(QCoreApplication::translate("HWDialog", "Enable Blinker Sound", nullptr));
+        screenDimmingSpinBox->setSuffix(QCoreApplication::translate("HWDialog", "%", nullptr));
+        label->setText(QCoreApplication::translate("HWDialog", "Dim screen to ", nullptr));
+        label_2->setText(QCoreApplication::translate("HWDialog", "when gauge lights are active.", nullptr));
     } // retranslateUi
 
 };

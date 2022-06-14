@@ -16,28 +16,22 @@
 #include "drawing.h"
 #include "variables.h"
 #include "vehiclevalues.h"
-#include "indicators.h"
 
 class Painter : public QObject
 {
     Q_OBJECT
 
 public:
-    Painter(VehicleValues &vehicle);
+    Painter(VehicleValues &vehicle, Indicators &indicators);
 
 public:
     void paint(QPainter *painter, QPaintEvent *event);
     void initLoop();
     void updateIndicators();
-    void playChime();
-    void playBlinker();
 
 private:
     QBrush backgroundBrush;
     QBrush shiftLightBrush;
-
-    QMediaPlayer *chimePlayer;
-    QMediaPlayer *blinkerPlayer;
 
     ImageMap *images;
     QFont largeGauge;
@@ -50,7 +44,7 @@ private:
 
     QElapsedTimer frameTimer;
     unsigned long long frameCount;
-    Indicators indicators;
+    Indicators *indicators;
     VehicleValues *vehicle;
     double brightness = 1.0;
 };

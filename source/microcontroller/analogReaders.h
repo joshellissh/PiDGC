@@ -15,10 +15,6 @@ int readLowBeams() {
   return digitalRead(LOW_BEAMS);
 }
 
-int readReverse() {
-  return digitalRead(REVERSE);
-}
-
 int readRightBlinker() {
   return digitalRead(RIGHT_BLINKER);
 }

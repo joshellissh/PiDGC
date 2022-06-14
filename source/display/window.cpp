@@ -1,10 +1,11 @@
 #include "window.h"
 #include <math.h>
 
-Window::Window(VehicleValues &vehicle)
+Window::Window(VehicleValues &vehicle, Indicators &indicators)
 {
     this->vehicle = &vehicle;
-    this->painter = new Painter(vehicle);
+    this->indicators = &indicators;
+    this->painter = new Painter(vehicle, indicators);
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setWindowModality(Qt::ApplicationModal);

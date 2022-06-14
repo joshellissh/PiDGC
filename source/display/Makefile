@@ -52,7 +52,8 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp \
+SOURCES       = config.cpp \
+		main.cpp \
 		glwidget.cpp \
 		serialworker.cpp \
 		window.cpp \
@@ -66,7 +67,8 @@ SOURCES       = main.cpp \
 		moc_window.cpp \
 		moc_painter.cpp \
 		moc_hwdialog.cpp
-OBJECTS       = main.o \
+OBJECTS       = config.o \
+		main.o \
 		glwidget.o \
 		serialworker.o \
 		window.o \
@@ -291,7 +293,8 @@ DIST          = /opt/qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/qt/5.15.2/gcc_64/mkspecs/features/exceptions.prf \
 		/opt/qt/5.15.2/gcc_64/mkspecs/features/yacc.prf \
 		/opt/qt/5.15.2/gcc_64/mkspecs/features/lex.prf \
-		display.pro glwidget.h \
+		display.pro config.h \
+		glwidget.h \
 		serialcontroller.h \
 		serialworker.h \
 		window.h \
@@ -302,7 +305,8 @@ DIST          = /opt/qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
 		converters.h \
 		vehiclevalues.h \
 		indicators.h \
-		hwdialog.h main.cpp \
+		hwdialog.h config.cpp \
+		main.cpp \
 		glwidget.cpp \
 		serialworker.cpp \
 		window.cpp \
@@ -762,8 +766,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents resources.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents glwidget.h serialcontroller.h serialworker.h window.h painter.h images.h variables.h drawing.h converters.h vehiclevalues.h indicators.h hwdialog.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp glwidget.cpp serialworker.cpp window.cpp painter.cpp vehiclevalues.cpp indicators.cpp hwdialog.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents config.h glwidget.h serialcontroller.h serialworker.h window.h painter.h images.h variables.h drawing.h converters.h vehiclevalues.h indicators.h hwdialog.h $(DISTDIR)/
+	$(COPY_FILE) --parents config.cpp main.cpp glwidget.cpp serialworker.cpp window.cpp painter.cpp vehiclevalues.cpp indicators.cpp hwdialog.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents hwdialog.ui $(DISTDIR)/
 
 
@@ -794,6 +798,7 @@ compiler_rcc_clean:
 qrc_resources.cpp: resources.qrc \
 		/opt/qt/5.15.2/gcc_64/bin/rcc \
 		images/center_logo.png \
+		images/boost_lagging_max_box.png \
 		images/battery.png \
 		images/fuel.png \
 		images/left_gauge_fg.png \
@@ -818,8 +823,6 @@ qrc_resources.cpp: resources.qrc \
 		images/blue_hilite_leading.png \
 		images/oil.png \
 		images/mil.png \
-		sounds/blinker.wav \
-		sounds/chime.wav \
 		fonts/bladi-two-4f-italic.ttf \
 		fonts/arial.ttf
 	/opt/qt/5.15.2/gcc_64/bin/rcc -name resources resources.qrc -o qrc_resources.cpp
@@ -1009,6 +1012,7 @@ moc_glwidget.cpp: glwidget.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		indicators.h \
 		moc_predefs.h \
 		/opt/qt/5.15.2/gcc_64/bin/moc
@@ -1101,8 +1105,10 @@ moc_serialcontroller.cpp: serialcontroller.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		serialworker.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QDebug \
+		indicators.h \
 		moc_predefs.h \
 		/opt/qt/5.15.2/gcc_64/bin/moc
 	/opt/qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include /home/jellish/code/pidgc/source/display/moc_predefs.h -I/opt/qt/5.15.2/gcc_64/mkspecs/linux-g++ -I/home/jellish/code/pidgc/source/display -I/opt/qt/5.15.2/gcc_64/include -I/opt/qt/5.15.2/gcc_64/include/QtMultimedia -I/opt/qt/5.15.2/gcc_64/include/QtWidgets -I/opt/qt/5.15.2/gcc_64/include/QtGui -I/opt/qt/5.15.2/gcc_64/include/QtNetwork -I/opt/qt/5.15.2/gcc_64/include/QtSerialPort -I/opt/qt/5.15.2/gcc_64/include/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include serialcontroller.h -o moc_serialcontroller.cpp
@@ -1195,6 +1201,8 @@ moc_serialworker.cpp: serialworker.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
+		indicators.h \
 		moc_predefs.h \
 		/opt/qt/5.15.2/gcc_64/bin/moc
 	/opt/qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include /home/jellish/code/pidgc/source/display/moc_predefs.h -I/opt/qt/5.15.2/gcc_64/mkspecs/linux-g++ -I/home/jellish/code/pidgc/source/display -I/opt/qt/5.15.2/gcc_64/include -I/opt/qt/5.15.2/gcc_64/include/QtMultimedia -I/opt/qt/5.15.2/gcc_64/include/QtWidgets -I/opt/qt/5.15.2/gcc_64/include/QtGui -I/opt/qt/5.15.2/gcc_64/include/QtNetwork -I/opt/qt/5.15.2/gcc_64/include/QtSerialPort -I/opt/qt/5.15.2/gcc_64/include/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include serialworker.h -o moc_serialworker.cpp
@@ -1364,6 +1372,7 @@ moc_window.cpp: window.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		indicators.h \
 		glwidget.h \
 		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QOpenGLWidget \
@@ -1557,6 +1566,7 @@ moc_painter.cpp: painter.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		indicators.h \
 		moc_predefs.h \
 		/opt/qt/5.15.2/gcc_64/bin/moc
@@ -1682,6 +1692,7 @@ moc_hwdialog.cpp: hwdialog.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		moc_predefs.h \
 		/opt/qt/5.15.2/gcc_64/bin/moc
 	/opt/qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include /home/jellish/code/pidgc/source/display/moc_predefs.h -I/opt/qt/5.15.2/gcc_64/mkspecs/linux-g++ -I/home/jellish/code/pidgc/source/display -I/opt/qt/5.15.2/gcc_64/include -I/opt/qt/5.15.2/gcc_64/include/QtMultimedia -I/opt/qt/5.15.2/gcc_64/include/QtWidgets -I/opt/qt/5.15.2/gcc_64/include/QtGui -I/opt/qt/5.15.2/gcc_64/include/QtNetwork -I/opt/qt/5.15.2/gcc_64/include/QtSerialPort -I/opt/qt/5.15.2/gcc_64/include/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include hwdialog.h -o moc_hwdialog.cpp
@@ -1706,6 +1717,86 @@ compiler_lex_clean:
 compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
+
+config.o: config.cpp /opt/qt/5.15.2/gcc_64/include/QtCore/QJsonDocument \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qglobal.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qconfig.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qlogging.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qflags.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qatomic.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qmutex.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qnumeric.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qchar.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qbytearray.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qrefcount.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qnamespace.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qarraydata.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qstringliteral.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qstringview.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qshareddata.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qhash.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qiterator.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qlist.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qpair.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qvector.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qcontainertools_impl.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qpoint.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qstringlist.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qmap.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qvariant.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qset.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/quuid.h \
+		config.h \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/QMutex \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o config.o config.cpp
 
 main.o: main.cpp window.h \
 		painter.h \
@@ -1872,6 +1963,7 @@ main.o: main.cpp window.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		indicators.h \
 		glwidget.h \
 		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QOpenGLWidget \
@@ -2088,6 +2180,7 @@ glwidget.o: glwidget.cpp glwidget.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		indicators.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o glwidget.o glwidget.cpp
 
@@ -2184,7 +2277,9 @@ serialworker.o: serialworker.cpp /opt/qt/5.15.2/gcc_64/include/QtSerialPort/QSer
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QJsonDocument \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
-		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
+		indicators.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serialworker.o serialworker.cpp
 
 window.o: window.cpp window.h \
@@ -2352,6 +2447,7 @@ window.o: window.cpp window.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		indicators.h \
 		glwidget.h \
 		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QOpenGLWidget \
@@ -2543,6 +2639,7 @@ painter.o: painter.cpp painter.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h \
 		indicators.h \
 		converters.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QList \
@@ -2637,7 +2734,8 @@ vehiclevalues.o: vehiclevalues.cpp vehiclevalues.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QJsonDocument \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
-		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h
+		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
+		config.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o vehiclevalues.o vehiclevalues.cpp
 
 indicators.o: indicators.cpp indicators.h
@@ -2752,6 +2850,7 @@ hwdialog.o: hwdialog.cpp /opt/qt/5.15.2/gcc_64/include/QtCore/QTimer \
 		/opt/qt/5.15.2/gcc_64/include/QtGui/qvector2d.h \
 		/opt/qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QDebug \
+		/opt/qt/5.15.2/gcc_64/include/QtCore/QString \
 		hwdialog.h \
 		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QDialog \
 		vehiclevalues.h \
@@ -2769,46 +2868,8 @@ hwdialog.o: hwdialog.cpp /opt/qt/5.15.2/gcc_64/include/QtCore/QTimer \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/QQueue \
 		/opt/qt/5.15.2/gcc_64/include/QtCore/qqueue.h \
-		ui_hwdialog.h \
-		/opt/qt/5.15.2/gcc_64/include/QtCore/QVariant \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
-		/opt/qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
-		/opt/qt/5.15.2/gcc_64/include/QtCore/qeventloop.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QCheckBox \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qcheckbox.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qicon.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QGroupBox \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qgroupbox.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QLineEdit \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qlineedit.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qpen.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QPlainTextEdit \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qplaintextedit.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qabstracttextdocumentlayout.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qtextlayout.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qglyphrun.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qrawfont.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qfontdatabase.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QPushButton \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qpushbutton.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/QSpinBox \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qspinbox.h \
-		/opt/qt/5.15.2/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/opt/qt/5.15.2/gcc_64/include/QtGui/qvalidator.h
+		config.h \
+		ui_hwdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o hwdialog.o hwdialog.cpp
 
 qrc_resources.o: qrc_resources.cpp 

@@ -5,9 +5,10 @@
 #include <QAudioDeviceInfo>
 #include <QFontDatabase>
 
-Painter::Painter(VehicleValues &vehicle)
+Painter::Painter(VehicleValues &vehicle, Indicators &indicators)
 {
     this->vehicle = &vehicle;
+    this->indicators = &indicators;
 
     frameCount = 0;
 
@@ -33,27 +34,19 @@ Painter::Painter(VehicleValues &vehicle)
     QFontDatabase::addApplicationFont(":/fonts/arial.ttf");
     QFontDatabase::addApplicationFont(":/fonts/bladi-two-4f-italic.ttf");
 
-    // Load sounds
-    chimePlayer = new QMediaPlayer();
-    chimePlayer->setMedia(QUrl("qrc:/sounds/chime.wav"));
-    chimePlayer->setVolume(100);
-
-    blinkerPlayer = new QMediaPlayer();
-    blinkerPlayer->setMedia(QUrl("qrc:/sounds/blinker.wav"));
-    blinkerPlayer->setVolume(100);
-
     frameTimer.start();
 }
 
 void Painter::paint(QPainter *painter, QPaintEvent *event)
 {
-    if (indicators.shiftLight)
+    if (vehicle->getRpm() >= 6500)
         painter->fillRect(event->rect(), shiftLightBrush);
     else
         painter->fillRect(event->rect(), backgroundBrush);
 
     // Run initialization sequence on startup
     if (frameCount < 80) initLoop();
+    else vehicle->initLoopFinished = true;
 
     // Set indicators according to vehicle values
     updateIndicators();
@@ -72,9 +65,17 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
     drawCenteredAt(painter, images->at("left_gauge_fg.png"), 249.0, 240.0);
 
     // Lagging indicator for maximum boost
-    if (indicators.boostLaggingMax && vehicle->getBoostLaggingMax() != 0) {
-        painter->setOpacity(indicators.boostLaggingMaxOpacity);
+    if (indicators->boostLaggingMax && vehicle->getBoostLaggingMax() != 0) {
+        painter->setOpacity(indicators->boostLaggingMaxOpacity);
         drawCenteredWithOffsetAndRotation(painter, images->at("lagging_max_boost.png"), 249.0, 240.0, -99.0, 0.0, boostToAngle(vehicle->getBoostLaggingMax()));
+
+        drawCenteredAt(painter, images->at("boost_lagging_max_box.png"), 249.0, 172.5);
+
+        painter->setPen(gaugeTextPen);
+        QString laggingMax;
+        laggingMax.sprintf("%d", (int)vehicle->getBoostLaggingMax());
+        painter->setFont(tinyGauge);
+        painter->drawText(249.0f - 20.0f, 172.5f - 10.0f, 40.0f, 20.0f, Qt::AlignCenter | Qt::AlignHCenter, laggingMax);
         painter->setOpacity(1);
     }
 
@@ -122,43 +123,43 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
     painter->setOpacity(1.0f);
 
     // Left blinker indicator
-    if (indicators.left)
+    if (vehicle->getLeftBlinker())
         drawCenteredAt(painter, images->at("left_indicator.png"), 490.0, 115.0);
 
     // Right blinker indicator
-    if (indicators.right)
+    if (vehicle->getRightBlinker())
         drawCenteredAt(painter, images->at("right_indicator.png"), 790.0, 115.0);
 
     // Low beam indicator
-    if (indicators.lowBeam)
+    if (vehicle->getLowBeam() || vehicle->getHighBeam())
         drawCenteredAt(painter, images->at("low_beam.png"), 565.0, 115.0);
 
     // Hight beam indicator
-    if (indicators.highBeam)
+    if (vehicle->getHighBeam())
         drawCenteredAt(painter, images->at("high_beam.png"), 565.0, 115.0);
 
     // Check engine indicator
-    if (indicators.mil)
+    if (vehicle->getMil())
         drawCenteredAt(painter, images->at("mil.png"), 640.0, 115.0);
 
     // Gauge lights/parking lights indicator
-    if (indicators.gaugeLights)
+    if (vehicle->getGaugeLights())
         drawCenteredAt(painter, images->at("parking-lights.png"), 715.0, 115.0);
 
     // Oil indicator
-    if (indicators.oil)
+    if (indicators->oil)
         drawCenteredAt(painter, images->at("oil.png"), 603.0, 362.0);
 
     // Battery indicator
-    if (indicators.battery)
+    if (indicators->battery)
         drawCenteredAt(painter, images->at("battery.png"), 678.0, 362.0);
 
     // Low fuel indicator
-    if (indicators.fuel)
+    if (indicators->fuel)
         drawCenteredAt(painter, images->at("fuel.png"), 736.0, 362.0);
 
     // Coolant temp indicator
-    if (indicators.coolant)
+    if (indicators->coolant)
         drawCenteredAt(painter, images->at("coolant.png"), 536.0, 362.0);
 
     // Reset trip icon
@@ -167,7 +168,7 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
     painter->setOpacity(1.0);
 
     // Microcontroller icon
-    if (indicators.serialConnected)
+    if (vehicle->getSerialConnected())
         painter->setOpacity(0.8);
     else
         painter->setOpacity(0.3);
@@ -188,7 +189,7 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
     voltage.sprintf("%.1f", vehicle->getVoltage());
     painter->setFont(smallGauge);
     painter->drawText(1031.0f - 20.0f, 388.5f - 10.0f, 40.0f, 20.0f, Qt::AlignCenter | Qt::AlignHCenter, voltage);
-    // Battery voltage
+    // Coolant temp
     QString temperature;
     temperature.sprintf("%d", (int)vehicle->getCoolant());
     painter->setFont(tinyGauge);
@@ -208,20 +209,13 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
 
     // Dimmer for when lights are on (night time)
     if (vehicle->getGaugeLights()) {
-        painter->setOpacity(0.5f);
+        painter->setOpacity((float)vehicle->config.getScreenDimming() * 0.01f);
         painter->fillRect(event->rect(), backgroundBrush);
         painter->setOpacity(1);
     }
 
     // Frame counter
     frameCount++;
-
-    // FPS
-//    double fps = 1000.0 / (double)frameTimer.elapsed();
-//    QString fpsText;
-//    fpsText.sprintf("%.1f", fps);
-//    painter->drawText(0.0f, 0.0f, 55.0f, 20.0f, Qt::AlignTrailing, fpsText);
-//    frameTimer.restart();
 }
 
 // Startup animation
@@ -229,113 +223,65 @@ void Painter::initLoop() {
     if (frameCount < 40) {
         vehicle->setRpm(vehicle->getRpm() + 200);
         vehicle->setMph(vehicle->getMph() + 4);
-        vehicle->setCoolant(vehicle->getCoolant() + 2.5);
+        vehicle->setCoolant(vehicle->getCoolant() + 6.25);
         vehicle->setFuel(vehicle->getFuel() + 0.025);
         vehicle->setBoost(vehicle->getBoost() + 0.8);
         vehicle->setVoltage(vehicle->getVoltage() + 0.375);
         vehicle->setOilPressure(vehicle->getOilPressure() + 2.25);
+
+        vehicle->setLeftBlinker(true);
+        vehicle->setRightBlinker(true);
+        vehicle->setLowBeam(true);
+        vehicle->setHighBeam(true);
+        vehicle->setGaugeLights(true);
+        vehicle->setMil(true);
+
+        indicators->battery = true;
+        indicators->coolant = true;
+        indicators->fuel = true;
+        indicators->oil = true;
     }
     if (frameCount >= 40) {
         vehicle->setRpm(vehicle->getRpm() - 200);
         vehicle->setMph(vehicle->getMph() - 4);
-        vehicle->setCoolant(vehicle->getCoolant() - 2.5);
+        vehicle->setCoolant(vehicle->getCoolant() - 6.25);
         vehicle->setFuel(vehicle->getFuel() - 0.025);
         vehicle->setBoost(vehicle->getBoost() - 0.8);
         vehicle->setVoltage(vehicle->getVoltage() - 0.375);
         vehicle->setOilPressure(vehicle->getOilPressure() - 2.25);
-    }
 
-//    if (frameCount >= 79) {
-//        vehicle->reset();
-//        vehicle->initialized = true;
-//        frameCount = 0;
-//    }
+        vehicle->setLeftBlinker(false);
+        vehicle->setRightBlinker(false);
+        vehicle->setLowBeam(false);
+        vehicle->setHighBeam(false);
+        vehicle->setGaugeLights(false);
+        vehicle->setMil(false);
+
+        indicators->battery = false;
+        indicators->coolant = false;
+        indicators->fuel = false;
+        indicators->oil = false;
+    }
 }
 
 void Painter::updateIndicators() {
-    // Fuel indicator
-    if (vehicle->getFuel() <= 0.25) {
-        // Chime to alert driver
-        if (indicators.fuel == false) playChime();
-
-        indicators.fuel = true;
-    } else {
-        indicators.fuel = false;
-    }
-
     // Boost lagging max
-    if (vehicle->getBoost() > vehicle->getBoostLaggingMax() && frameCount >= 80) {
+    if (vehicle->getBoost() > vehicle->getBoostLaggingMax() && vehicle->getBoost() > 0.0 && frameCount > 80) {
         vehicle->setBoostLaggingMax(vehicle->getBoost());
-        indicators.boostLaggingMax = false;
-
-        qDebug() << "High boost set to" << vehicle->getBoostLaggingMax();
+        indicators->boostLaggingMax = false;
     }
 
     if (vehicle->getBoost() < vehicle->getBoostLaggingMax()) {
-        if (!indicators.boostLaggingMax) {
-            indicators.boostLaggingMax = true;
-            indicators.boostLaggingMaxOpacity = 1.0f;
+        if (!indicators->boostLaggingMax) {
+            indicators->boostLaggingMax = true;
+            indicators->boostLaggingMaxOpacity = 1.0f;
         }
 
-        indicators.boostLaggingMaxOpacity -= 0.01;
+        indicators->boostLaggingMaxOpacity -= 0.005;
 
-        if (indicators.boostLaggingMaxOpacity <= 0) {
-            indicators.boostLaggingMaxOpacity = 0;
+        if (indicators->boostLaggingMaxOpacity <= 0) {
+            indicators->boostLaggingMaxOpacity = 0;
             vehicle->setBoostLaggingMax(0);
         }
-    }
-
-    // Parking lights / gauge lights
-    if (vehicle->getGaugeLights())
-        indicators.gaugeLights = true;
-    else
-        indicators.gaugeLights = false;
-
-    // Left blinker
-    if (vehicle->getLeftBlinker()) {
-        if (indicators.left == false) playBlinker();
-
-        indicators.left = true;
-    }
-    else
-        indicators.left = false;
-
-    // Right blinker
-    if (vehicle->getRightBlinker()) {
-        if (indicators.right == false) playBlinker();
-
-        indicators.right = true;
-    }
-    else
-        indicators.right = false;
-
-    // Chimes for warnings
-    if (vehicle->getRpm() > 500 &&
-            (indicators.mil != vehicle->getMil() ||
-            indicators.oil != vehicle->getOilPressure() ||
-            indicators.battery != (vehicle->getVoltage() < 11.5f || vehicle->getVoltage() > 15.0f) ||
-            indicators.coolant != (vehicle->getCoolant() > 220.0f)))
-        playChime();
-
-    indicators.lowBeam = vehicle->getLowBeam() || vehicle->getHighBeam();
-    indicators.highBeam = vehicle->getHighBeam();
-    indicators.mil = vehicle->getMil();
-    indicators.oil = vehicle->getOilPressure() < 10.0f;
-    indicators.battery = vehicle->getVoltage() < 11.5f || vehicle->getVoltage() > 15.0f;
-    indicators.fuel = vehicle->getFuel() <= 0.25f;
-    indicators.coolant = vehicle->getCoolant() > 220.0f;
-    indicators.shiftLight = vehicle->getRpm() > 6500.0f;
-    indicators.serialConnected = QTime::currentTime().msecsSinceStartOfDay() - vehicle->lastSerialRead < 5000 ? true : false;
-}
-
-void Painter::playChime() {
-    if (chimePlayer->state() != QMediaPlayer::PlayingState) {
-        chimePlayer->play();
-    }
-}
-
-void Painter::playBlinker() {
-    if (blinkerPlayer->state() != QMediaPlayer::PlayingState) {
-        blinkerPlayer->play();
     }
 }
