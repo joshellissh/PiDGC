@@ -39,6 +39,7 @@ public:
     vssLastPulse = 0;
     vssPulseSeparation = 0;
     vssPulseCounter = 0;
+    ppm = 10500;
   }
 };
 

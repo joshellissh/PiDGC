@@ -1,5 +1,5 @@
 #define NO_PULSE    99999
-#define LOW_FREQ    5000000   // 500ms
+#define LOW_FREQ    5000000   // 5s
 #define MED_FREQ    250000    // 250ms
 #define HI_FREQ     100000    // 100ms
 
@@ -11,6 +11,7 @@
 #include "analogReaders.h"
 #include "canbus.h"
 #include "buzzerSound.h"
+#include "patternBuzzer.h"
 #include "indicators.h"
 
 SDCard sdCard;
@@ -18,7 +19,9 @@ Values values;
 Indicators indicators;
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
 BuzzerSound blinkerSound(BUZZER, 50);
-BuzzerSound milSound(BUZZER, 3000);
+BuzzerSound milSound(BUZZER, 3000, 30000);
+PatternBuzzer fuelBuzzer(BUZZER, (unsigned int []){1,1,1,1,0,1,1,1,1}, 9, 250, 750, 600000);
+PatternBuzzer gaugeLiteBuzzer(BUZZER, (unsigned int []){1,1,0}, 3, 250, 750, 3000);
 
 void setup() {
   // Turn on LED as a power indicator
@@ -35,7 +38,7 @@ void setup() {
   canInit();
 
   // Initialize smoothed variables
-  values.fuelLevel.begin(SMOOTHED_AVERAGE, 200);
+  values.fuelLevel.begin(SMOOTHED_AVERAGE, 50);
   values.mph.begin(SMOOTHED_AVERAGE, 40);
   values.voltage.begin(SMOOTHED_AVERAGE, 10);
 
@@ -49,7 +52,7 @@ void setup() {
   pinMode(LOW_BEAMS, INPUT);
   pinMode(RIGHT_BLINKER, INPUT);
   pinMode(LEFT_BLINKER, INPUT);
-  pinMode(MIL, INPUT);
+  pinMode(MIL, INPUT_PULLDOWN);
   pinMode(GAUGE_LIGHTS, INPUT);
 
   // Load initial values from files
@@ -62,7 +65,6 @@ void setup() {
 
 void loop() {
   handleComms(sdCard, values);
-  readAnalogPins();
   indicators.update(milSound);
 
   // Process necessary canbus events
@@ -71,6 +73,8 @@ void loop() {
   // process buzzer sounds
   blinkerSound.loop();
   milSound.loop();
+  fuelBuzzer.loop();
+  gaugeLiteBuzzer.loop();
 
   // High frequency updates
   if (values.highFrequency >= HI_FREQ) {
@@ -119,6 +123,8 @@ void loop() {
   if (values.mediumFrequency >= MED_FREQ) {
     values.mediumFrequency -= MED_FREQ;
 
+    readAnalogPins();
+
     bool prevLeftBlinker = values.leftBlinker;
     bool prevRightBlinker = values.rightBlinker;
     bool prevMil = values.mil;
@@ -137,10 +143,14 @@ void loop() {
       milSound.play();
     }
 
+    if (readGaugeLights() == true && values.rpm <= 250) {
+      gaugeLiteBuzzer.play();
+    }
+
     char output[512] = {0};
     sprintf(
       output, 
-      "voltage:%f\nfuel:%f\nhi:%d\nleft:%d\nlo:%d\nright:%d\nmil:%d\nglite:%d\nmph:%d\noil:%f",
+      "voltage:%f\nfuel:%f\nhi:%d\nleft:%d\nlow:%d\nright:%d\nmil:%d\nglite:%d\nmph:%d\noil:%f",
       values.voltage.get(),
       values.fuelLevel.get(),
       readHighBeams(),
@@ -168,6 +178,11 @@ void loop() {
     char output[256] = {0};
     sprintf(output, "coolant:%d", values.coolantTemp);
     Serial.println(output);
+
+    // Play fuel buzzer if needed
+    if (values.fuelLevel.get() <= 0.125) {
+      fuelBuzzer.play();
+    }
   }
 }
 
@@ -183,6 +198,13 @@ void vssInterrupt() {
     values.vssLastPulse = currentPulse;
     values.vssPulseSeparation = NO_PULSE;
   } else {
+    unsigned long pulseDelta = currentPulse - values.vssLastPulse;
+    
+    if (pulseDelta <= 500) {
+      // Impossibly fast. Throw it out.
+      return;
+    }
+    
     values.vssPulseSeparation = currentPulse - values.vssLastPulse;
     values.vssLastPulse = currentPulse;
   }

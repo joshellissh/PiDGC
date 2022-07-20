@@ -2,7 +2,7 @@
 
 // Reads battery voltage (0-15)
 float readVoltage() {
-  float Vin = ((float)analogRead(VOLTAGE) / 1024.0) * 3.3;
+  float Vin = ((float)analogRead(VOLTAGE) / 1024.0) * 3.26;
   
   return (127.0 * Vin) / 27.0;
 }
