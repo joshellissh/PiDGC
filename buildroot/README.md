@@ -28,3 +28,9 @@ Output File | Path
 --          | --
 RPI3 Image  | output/images/sdcard.img
 qmake       | output/qt/qt-everywhere-src-*/aaaout/bin/qmake
+
+
+make pidgc_defconfig
+make -j8
+1280x480
+make linux-menuconfig

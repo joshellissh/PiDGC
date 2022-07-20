@@ -2555,7 +2555,7 @@ endif
 ifneq "$(HOSTARCH)" "x86_64"
 /home/jellish/code/pidgc/buildroot/output/build/buildroot-config/auto.conf: FORCE
 endif
-ifneq "$(BR2_VERSION_FULL)" "2019.02.5-g0e477c9d-dirty"
+ifneq "$(BR2_VERSION_FULL)" "2019.02.5-g8efbf82b-dirty"
 /home/jellish/code/pidgc/buildroot/output/build/buildroot-config/auto.conf: FORCE
 endif
 
