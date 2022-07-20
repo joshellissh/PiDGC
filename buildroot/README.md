@@ -34,3 +34,25 @@ make pidgc_defconfig
 make -j8
 1280x480
 make linux-menuconfig
+- Device Drivers
+  - Input device support
+    - <*> Mouse interface
+    - [*] USB support
+      - [*] Keyboards
+        - Select all as *
+      - [*] Mice
+        - Select all as *
+      - [*] Touchscreens
+  - HID support
+    - Special HID drivers
+      - <*> A4 Tech mice
+      - <*> Apple {i,Power,Mac}Books
+      - <*> ASUS
+      - <*> Logitech devices
+        - All subdivices
+      - <*> Apple Magic Mouse/Trackpad multi-touch support
+    - USB HID support
+      - Select all as *
+  - USB support
+    - [*]   USB announce new devices
+    - Set all as * under `*** USB Host Controller Drivers ***`
