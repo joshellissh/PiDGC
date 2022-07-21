@@ -40,6 +40,12 @@ public:
     vssPulseSeparation = 0;
     vssPulseCounter = 0;
     ppm = 10500;
+
+    barometricPressure = 14.1f;
+    boostPressure = 0.0f;
+    coolantTemp = 0;
+    oilPressure = 0.0f;
+    rpm = 0;
   }
 };
 

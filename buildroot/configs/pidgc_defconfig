@@ -10,7 +10,6 @@ BR2_GCC_ENABLE_LTO=y
 BR2_TARGET_GENERIC_HOSTNAME="pidgc"
 BR2_TARGET_GENERIC_ISSUE="Pi Digital Gauge Cluster by Josh Ellis (josh@ellis.sh)"
 BR2_TARGET_GENERIC_ROOT_PASSWD="triumph"
-# BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW is not set
 BR2_ROOTFS_OVERLAY="board/pidgc/rpi3/rootfs_overlay"
 BR2_ROOTFS_POST_BUILD_SCRIPT="board/pidgc/rpi3/post-build.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/pidgc/rpi3/post-image.sh"

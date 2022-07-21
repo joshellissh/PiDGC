@@ -1,4 +1,4 @@
-#ifndef CANBUS_H
+ #ifndef CANBUS_H
 #define CANBUS_H
 
 #include <FlexCAN_T4.h>
@@ -46,7 +46,7 @@ void canReceive(const CAN_message_t &msg){
       // RPM
       case 0x0c: {
         if (msg.buf[0] == 4) {
-          values.rpm = ((msg.buf[4] * 256 + msg.buf[5]) / 4);
+          values.rpm = ((msg.buf[3] * 256 + msg.buf[4]) / 4);
         }
       }
       break;
