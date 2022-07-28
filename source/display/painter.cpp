@@ -277,7 +277,7 @@ void Painter::updateIndicators() {
             indicators->boostLaggingMaxOpacity = 1.0f;
         }
 
-        indicators->boostLaggingMaxOpacity -= 0.005;
+        indicators->boostLaggingMaxOpacity -= 0.0025;
 
         if (indicators->boostLaggingMaxOpacity <= 0) {
             indicators->boostLaggingMaxOpacity = 0;

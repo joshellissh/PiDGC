@@ -38,9 +38,9 @@ void setup() {
   canInit();
 
   // Initialize smoothed variables
-  values.fuelLevel.begin(SMOOTHED_AVERAGE, 50);
-  values.mph.begin(SMOOTHED_AVERAGE, 40);
-  values.voltage.begin(SMOOTHED_AVERAGE, 10);
+  values.fuelLevel.begin(SMOOTHED_AVERAGE, 100);
+  values.mph.begin(SMOOTHED_AVERAGE, 20);
+  values.voltage.begin(SMOOTHED_AVERAGE, 20);
 
   // Set value to expiration so it will fire immediately on boot
   values.lowFrequency = LOW_FREQ;
