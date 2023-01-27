@@ -2,6 +2,7 @@
 #define CANBUS_H
 
 #include <FlexCAN_T4.h>
+#include <math.h>
 #include "values.h"
 
 extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
@@ -19,19 +20,22 @@ void canSendOBD2(uint8_t activeByte){
   msgTx.buf[5] = 0x00; 
   msgTx.buf[6] = 0x00;
   msgTx.buf[7] = 0x00;
-  can1.write(msgTx); 
+//  can1.write(msgTx); 
 }
 
-void canSendSpeedMPH(int speedMPH){
-  int speedKPH = (int)((float)speedMPH * 1.60934f);
+void canSendSpeedMPH(float speedMPH){
+  float fspeedKPH = speedMPH * 1.609344f;
+  byte bspeedKPH = (byte)floor(fspeedKPH);
+  byte bspeedDecimalsKPH = (byte)round(fmod(fspeedKPH, 1) * 256.0);
   
   CAN_message_t msgTx;
   msgTx.len = 3; // number of bytes in request
   msgTx.id = 0x18FEF1FF;
-  msgTx.buf[0] = 0x00;
-  msgTx.buf[1] = 0x00;
-  msgTx.buf[2] = (speedKPH & 0x00FF);         // Speed LSB
-  msgTx.buf[3] = ((speedKPH & 0xFF00) >> 8);  // Speed MSB
+  msgTx.flags.extended = 1;
+  msgTx.buf[0] = 0x00; // byte 1
+  msgTx.buf[1] = bspeedDecimalsKPH;
+  msgTx.buf[2] = bspeedKPH;
+  msgTx.buf[3] = 0x00;
   msgTx.buf[4] = 0x00;
   msgTx.buf[5] = 0x00; 
   msgTx.buf[6] = 0x00;

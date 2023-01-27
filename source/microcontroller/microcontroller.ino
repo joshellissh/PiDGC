@@ -113,12 +113,12 @@ void loop() {
         values.mph.add(0.0);
     }
 
-    canSendSpeedMPH(25);
+    canSendSpeedMPH(68.7);
 
     // Send rpm & boost
     char output[256] = {0};
     sprintf(output, "rpm:%d\nboost:%f", values.rpm, values.boostPressure);
-    Serial.println(output);
+//    Serial.println(output);
   }
 
   // Medium frequency updates
@@ -164,12 +164,12 @@ void loop() {
       values.mph.get(),
       values.oilPressure
     );
-    Serial.println(output);
+//    Serial.println(output);
 
     float tripOdometer = sdCard.readFloat(TRIP_FILE, 0.0f);
     float odometer = sdCard.readFloat(ODOMETER_FILE, 0.0f);
     sprintf(output, "odo:%f,%f", tripOdometer, odometer);
-    Serial.println(output);
+//    Serial.println(output);
   }
 
   // Low frequency updates
@@ -184,7 +184,7 @@ void loop() {
 
     char output[256] = {0};
     sprintf(output, "coolant:%d", values.coolantTemp);
-    Serial.println(output);
+//    Serial.println(output);
 
     // Play fuel buzzer if needed
     if (values.fuelLevel.get() <= 0.125) {
