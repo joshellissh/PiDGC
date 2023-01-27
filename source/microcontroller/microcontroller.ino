@@ -113,33 +113,38 @@ void loop() {
         values.mph.add(0.0);
     }
 
-    canSendSpeedMPH(68.7);
+    // Send speed to ECU
+    canSendSpeedMPH(values.mph.get());
 
-    // Send rpm & boost
+    {
+      // Update blinkers
+      readAnalogPins();
+  
+      bool prevLeftBlinker = values.leftBlinker;
+      bool prevRightBlinker = values.rightBlinker;
+  
+      values.leftBlinker = readLeftBlinker();
+      values.rightBlinker = readRightBlinker();
+  
+      if (values.blinkerSound) {
+        if ((!prevLeftBlinker && values.leftBlinker) || (!prevRightBlinker && values.rightBlinker)) {
+          blinkerSound.play();
+        }
+      }
+    }
+
+    // Send rpm, boost, and blinkers
     char output[256] = {0};
-    sprintf(output, "rpm:%d\nboost:%f", values.rpm, values.boostPressure);
-//    Serial.println(output);
+    sprintf(output, "rpm:%d\nboost:%f\nleft:%d\nright:%d", values.rpm, values.boostPressure, values.leftBlinker, values.rightBlinker);
+    Serial.println(output);
   }
 
   // Medium frequency updates
   if (values.mediumFrequency >= MED_FREQ) {
     values.mediumFrequency -= MED_FREQ;
 
-    readAnalogPins();
-
-    bool prevLeftBlinker = values.leftBlinker;
-    bool prevRightBlinker = values.rightBlinker;
     bool prevMil = values.mil;
-
-    values.leftBlinker = readLeftBlinker();
-    values.rightBlinker = readRightBlinker();
     values.mil = readMIL();
-
-    if (values.blinkerSound) {
-      if ((!prevLeftBlinker && values.leftBlinker) || (!prevRightBlinker && values.rightBlinker)) {
-        blinkerSound.play();
-      }
-    }
 
     if (!prevMil && values.mil) {
       milSound.play();
@@ -152,24 +157,22 @@ void loop() {
     char output[512] = {0};
     sprintf(
       output, 
-      "voltage:%f\nfuel:%f\nhi:%d\nleft:%d\nlow:%d\nright:%d\nmil:%d\nglite:%d\nmph:%d\noil:%f",
+      "voltage:%f\nfuel:%f\nhi:%d\nlow:%d\nmil:%d\nglite:%d\nmph:%d\noil:%f",
       values.voltage.get(),
       values.fuelLevel.get(),
       readHighBeams(),
-      values.leftBlinker,
       readLowBeams(),
-      values.rightBlinker,
       values.mil,
       readGaugeLights(),
       values.mph.get(),
       values.oilPressure
     );
-//    Serial.println(output);
+    Serial.println(output);
 
     float tripOdometer = sdCard.readFloat(TRIP_FILE, 0.0f);
     float odometer = sdCard.readFloat(ODOMETER_FILE, 0.0f);
     sprintf(output, "odo:%f,%f", tripOdometer, odometer);
-//    Serial.println(output);
+    Serial.println(output);
   }
 
   // Low frequency updates
@@ -184,7 +187,7 @@ void loop() {
 
     char output[256] = {0};
     sprintf(output, "coolant:%d", values.coolantTemp);
-//    Serial.println(output);
+    Serial.println(output);
 
     // Play fuel buzzer if needed
     if (values.fuelLevel.get() <= 0.125) {
