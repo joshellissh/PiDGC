@@ -81,10 +81,10 @@ void loop() {
     values.highFrequency -= HI_FREQ;
 
     // Request engine RPM
-    canSend(0x0c);
+    canSendOBD2(0x0c);
 
     // Request MAP
-    canSend(0x0B);
+    canSendOBD2(0x0B);
 
     cli();
     unsigned int numPulses = values.vssPulseCounter;
@@ -112,6 +112,8 @@ void loop() {
     } else {
         values.mph.add(0.0);
     }
+
+    canSendSpeedMPH(25);
 
     // Send rpm & boost
     char output[256] = {0};
@@ -163,6 +165,11 @@ void loop() {
       values.oilPressure
     );
     Serial.println(output);
+
+    float tripOdometer = sdCard.readFloat(TRIP_FILE, 0.0f);
+    float odometer = sdCard.readFloat(ODOMETER_FILE, 0.0f);
+    sprintf(output, "odo:%f,%f", tripOdometer, odometer);
+    Serial.println(output);
   }
 
   // Low frequency updates
@@ -170,10 +177,10 @@ void loop() {
     values.lowFrequency -= LOW_FREQ;
 
     // Request coolant temp
-    canSend(0x05);
+    canSendOBD2(0x05);
 
     // Request Barometric Pressure
-    canSend(0x33);
+    canSendOBD2(0x33);
 
     char output[256] = {0};
     sprintf(output, "coolant:%d", values.coolantTemp);

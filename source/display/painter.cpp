@@ -163,9 +163,10 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
         drawCenteredAt(painter, images->at("coolant.png"), 536.0, 362.0);
 
     // Reset trip icon
-    painter->setOpacity(0.8);
-    drawCenteredAt(painter, images->at("reset.png"), 410.0, 423.0);
-    painter->setOpacity(1.0);
+// HIDING THIS DUE TO LACK OF TOUCH SCREEN. Enable if your touch screen works. :)
+//    painter->setOpacity(0.8);
+//    drawCenteredAt(painter, images->at("reset.png"), 410.0, 423.0);
+//    painter->setOpacity(1.0);
 
     // Microcontroller icon
     if (vehicle->getSerialConnected())
@@ -197,10 +198,11 @@ void Painter::paint(QPainter *painter, QPaintEvent *event)
 
     painter->setFont(normalText);
     painter->setOpacity(0.8);
-    // Trip odometer
-    QString tripText;
-    tripText.sprintf("Trip: %.1f", vehicle->getTripOdometer());
-    painter->drawText(430.0f, 415.0f, 300.0f, 20.0f, Qt::AlignLeading, tripText);
+//    // Trip odometer
+// HIDING THIS DUE TO LACK OF TOUCH SCREEN. Enable if your touch screen works. :)
+//    QString tripText;
+//    tripText.sprintf("Trip: %.1f", vehicle->getTripOdometer());
+//    painter->drawText(430.0f, 415.0f, 300.0f, 20.0f, Qt::AlignLeading, tripText);
 
     // Odometer
     QString odometerText;

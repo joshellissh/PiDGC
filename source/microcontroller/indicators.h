@@ -10,7 +10,7 @@ public:
 
   void update(BuzzerSound &milSound) {
     // Oil pressure indicator
-    if (values.oilPressure <= 20) {
+    if (values.oilPressure <= 15) {
       oil = true;
       playMil(milSound);
     } else {
@@ -34,7 +34,7 @@ public:
     }
   
     // Fuel indicator
-    if (values.fuelLevel.get() <= 0.25f) {
+    if (values.fuelLevel.get() <= 0.15f) {
       fuel = true;
       playMil(milSound);
     } else {

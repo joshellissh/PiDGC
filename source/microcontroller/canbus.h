@@ -7,15 +7,31 @@
 extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
 extern Values values;
 
-void canSend(uint8_t activeByte){
+void canSendOBD2(uint8_t activeByte){
   CAN_message_t msgTx;
   msgTx.len = 3; // number of bytes in request
-  msgTx.id = 0x7E0; // Request Header
-  //  msgTx.flags.extended = 0; // 11 bit header, not 29 bit
-  //  msgTx.flags.remote = 0;
+  msgTx.id = 0x7E0;
   msgTx.buf[0] = 0x02; // Number of bytes in request
   msgTx.buf[1] = 0x01; // Mode of request (0x01 = OBD2)
   msgTx.buf[2] = activeByte;
+  msgTx.buf[3] = 0x00;
+  msgTx.buf[4] = 0x00;
+  msgTx.buf[5] = 0x00; 
+  msgTx.buf[6] = 0x00;
+  msgTx.buf[7] = 0x00;
+  can1.write(msgTx); 
+}
+
+void canSendSpeedMPH(int speedMPH){
+  int speedKPH = (int)((float)speedMPH * 1.60934f);
+  
+  CAN_message_t msgTx;
+  msgTx.len = 3; // number of bytes in request
+  msgTx.id = 0x18FEF1FF;
+  msgTx.buf[0] = 0x00;
+  msgTx.buf[1] = 0x00;
+  msgTx.buf[2] = (speedKPH & 0x00FF);         // Speed LSB
+  msgTx.buf[3] = ((speedKPH & 0xFF00) >> 8);  // Speed MSB
   msgTx.buf[4] = 0x00;
   msgTx.buf[5] = 0x00; 
   msgTx.buf[6] = 0x00;
