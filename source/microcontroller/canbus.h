@@ -20,7 +20,7 @@ void canSendOBD2(uint8_t activeByte){
   msgTx.buf[5] = 0x00; 
   msgTx.buf[6] = 0x00;
   msgTx.buf[7] = 0x00;
-//  can1.write(msgTx); 
+  can1.write(msgTx); 
 }
 
 void canSendSpeedMPH(float speedMPH){
