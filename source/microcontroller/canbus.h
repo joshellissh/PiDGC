@@ -82,7 +82,8 @@ void canReceive(const CAN_message_t &msg){
       // MAP
       case 0x0B: {
         if (msg.buf[0] == 3) {
-          values.boostPressure = ((float)msg.buf[3] * 0.145038f) - values.barometricPressure;
+          values.manifoldAbsolutePressure = ((float)msg.buf[3] * 0.145038f);
+          values.boostPressure = values.manifoldAbsolutePressure - values.barometricPressure;
         }
       }
       break;
@@ -91,6 +92,78 @@ void canReceive(const CAN_message_t &msg){
       case 0x33: {
         if (msg.buf[0] == 3) {
           values.barometricPressure = (float)msg.buf[3] * 0.145038f;
+        }
+      }
+      break;
+
+      // IAT
+      case 0x0F: {
+        if (msg.buf[0] == 3) {
+          values.intakeAirTemp = (float)msg.buf[3] - 40;
+        }
+      }
+      break;
+
+      // Timing advance
+      case 0x0E: {
+        if (msg.buf[0] == 3) {
+          values.timingAdvance = ((float)msg.buf[3] / 2.0f) - 64.0f;
+        }
+      }
+      break;
+
+      // Throttle position (relative)
+      case 0x45: {
+        if (msg.buf[0] == 3) {
+          values.throttlePosition = (float)msg.buf[3] * 0.39215;
+        }
+      }
+      break;
+
+      // Foot Pedal Position (Relative)
+      case 0x5A: {
+        if (msg.buf[0] == 3) {
+          values.footPedalPosition = (float)msg.buf[3] * 0.39215;
+        }
+      }
+      break;
+
+      // Oxygen Sensor 1 Air-Fuel Equivalence Ratio
+      case 0x34: {
+        // if (msg.buf[0] == 6) {
+          values.oxySensor1AFER = 0.000030517578125f * ((256.0f * (float)msg.buf[3]) + (float)msg.buf[4]);
+        // }
+      }
+      break;
+
+      // Short Term Fuel Trim - Bank 1
+      case 0x06: {
+        if (msg.buf[0] == 3) {
+          values.shortTermFuelTrimB1 = (0.78125f * (float)msg.buf[3]) - 100.0f;
+        }
+      }
+      break;
+
+      // Long Term Fuel Trim - Bank 1
+      case 0x07: {
+        if (msg.buf[0] == 3) {
+          values.longTermFuelTrimB1 = (0.78125f * (float)msg.buf[3]) - 100.0f;
+        }
+      }
+      break;
+
+      // Throttle Inlet Pressure
+      case 0x70: {
+        // if (msg.buf[0] == 12) {
+          values.throttleInletPressure = ((256.0f * (float)msg.buf[6]) + (float)msg.buf[7]) / 32.0f;
+        // }
+      }
+      break;
+
+      // Fuel Rail Pressure
+      case 0x23: {
+        if (msg.buf[0] == 4) {
+          values.fuelRailPressure = 10.0f * ((256.0f * (float)msg.buf[3]) + (float)msg.buf[4]);
         }
       }
       break;
