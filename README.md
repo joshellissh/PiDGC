@@ -4,6 +4,8 @@ Raspberry Pi based Digital Gauge Cluster by Josh Ellis / josh@ellis.sh
 **Please Note: This library is designed for the Raspberry Pi 3B, a custom built PCB, and a 1280x480 display. It
 will look weird on other displays and won't function without those components.**
 
+You can see what it does here: https://www.youtube.com/watch?v=zrCutGj2v5M
+
 ### Update Information
 This repository is a total rewrite of the PiDGC codebase. The kotlin hardware interface has 
 been removed, and all code is now in either the microcontroller (Teensy 4.1) or the Qt 
